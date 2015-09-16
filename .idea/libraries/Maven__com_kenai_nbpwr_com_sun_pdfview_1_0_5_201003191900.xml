@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.kenai.nbpwr:com-sun-pdfview:1.0.5-201003191900">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/kenai/nbpwr/com-sun-pdfview/1.0.5-201003191900/com-sun-pdfview-1.0.5-201003191900.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/kenai/nbpwr/com-sun-pdfview/1.0.5-201003191900/com-sun-pdfview-1.0.5-201003191900-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/kenai/nbpwr/com-sun-pdfview/1.0.5-201003191900/com-sun-pdfview-1.0.5-201003191900-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

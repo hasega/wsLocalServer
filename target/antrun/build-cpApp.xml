@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="cpApp"  >
+<target name="cpApp">
+  <copy todir="src/main/resources/app" failonerror="false" overwrite="true" verbose="true">
+    <fileset includes="**/*" dir="C:/git/tsAgenciaVirtual/www"/>
+  </copy>
+</target>
+</project>

@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons
+END
+TiposTransacaoTEFConstant.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/TiposTransacaoTEFConstant.java
+END
+ReturnConfiguraIntSiTefInterativo.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/ReturnConfiguraIntSiTefInterativo.java
+END
+ReturnIniciaFuncaoSiTefInterativo.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/ReturnIniciaFuncaoSiTefInterativo.java
+END
+StatusTransacaoTEFConstant.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/StatusTransacaoTEFConstant.java
+END
+TiposConfirmacaoTEFConstant.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/TiposConfirmacaoTEFConstant.java
+END
+TiposCamposTEFConstant.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/TiposCamposTEFConstant.java
+END
+TiposColetaDadosTEFConstant.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/TiposColetaDadosTEFConstant.java
+END
+TiposComandosTEFConstant.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/TiposComandosTEFConstant.java
+END
+ReturnContinuaFuncaoSiTefInterativo.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repositorioFOZ/!svn/ver/12441/SAN/tags/VER_4_1_0/Fonte/san/tef/src/main/java/logic/nsgc/tef/cons/ReturnContinuaFuncaoSiTefInterativo.java
+END
