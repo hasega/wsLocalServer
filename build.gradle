@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot' 
+apply plugin: 'edu.sc.seis.launch4j'
 
 
 group = 'io.tempra'
@@ -15,9 +16,11 @@ buildscript {
 	}
 	repositories {
 		mavenCentral()
+		         maven { url  'https://plugins.gradle.org/m2/' }		
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+    classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:1.6.1'
 
 	}
 }
@@ -36,6 +39,11 @@ eclipse {
 		 containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
 		 containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
 	}
+}
+
+launch4j {
+  mainClassName = 'io.tempra.AppServer'
+  icon = '../resources/main/icons/app.ico'
 }
 
 	repositories {

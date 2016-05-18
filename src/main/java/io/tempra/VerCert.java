@@ -70,38 +70,13 @@ public class VerCert {
         return ks;
 
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+      
     public String assinadorDigital_2()// throws Exception
 	{
     	String retorno = "";
     	System.out.println("0");		
 		try{
 			PdfReader pdfReader = new PdfReader("C:\\vstGED_Doc\\Assinatura.pdf");
-		
 			KeyStore ks = KeyStore.getInstance("PKCS12");
 			String senha = "Abcd1234";
 		

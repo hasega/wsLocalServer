@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
@@ -14,9 +15,9 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-@Configuration
-@EnableAutoConfiguration
+@SpringBootApplication
 @EnableWebSocket
+
 public class AppServer {
 
 	
@@ -29,8 +30,8 @@ public class AppServer {
 
         @Override
         public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-            registry.addHandler(new MyTextHandler(), "/text").withSockJS();
-            registry.addHandler(new MyBinaryHandler(), "/binary").withSockJS();
+            registry.addHandler(new MyTextHandler(), "/text").setAllowedOrigins("*").withSockJS();
+            registry.addHandler(new MyBinaryHandler(), "/binary").setAllowedOrigins("*").withSockJS();
         }
     }
 
