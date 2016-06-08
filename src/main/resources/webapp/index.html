@@ -1,12 +1,54 @@
 <html>
 <head>
-    <script type="text/javascript" src="js/fileupload.js"></script>
-	<link rel="stylesheet" type="text/css" href="styles/styles.css">
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/fileupload.js"></script>
+
+
+<script src="js/jquery-ui.js"></script>
+<script src="js/jquery-iframe-transport.js"></script>
+<script src="js/jquery-file-upload.js"></script>
+
+
+<!-- bootstrap just to have good looking page -->
+<script src="js/bootstrap.min.js"></script>
+<link href="css/bootstrap.css" type="text/css" rel="stylesheet" />
+
+
+<link rel="stylesheet" type="text/css" href="styles/styles.css">
 </head>
 <body onload="check();">
-<h2>File Uploader</h2>
-<div id="drop_zone" class="zone">Drop file here</div>
-<div id="list_zone" class="zone">Uploaded files<br><table id="list"></table></div>
+	<h2>Assinatura de PDF</h2>
+	<div id="cert_zone" class="zone">
+		<label for="certificates_select"> Escolha o Certificado a ser
+			utilzado</label> <select style="width: 100%" id="certificates_select"></select>
+	</div>
+	<div id="cert_zone" class="zone">
+
+		<label for="password">Digite a senha</label> <input type="password"
+			id="password" />
+	</div>
+	<input id="fileupload" type="file" name="files[]" data-url="upload"
+		multiple>
+
+	<div id="dropzone" class="fade well">Drop files here</div>
+
+	<div id="progress" class="progress">
+		<div class="bar" style="width: 0%;"></div>
+	</div>
+	<h5 style="text-align: center">
+		<i style="color: #ccc"><small>Tamanho Maximo: 2 Mb -
+				Exibindo os ultimos 20 arquivos</small></i>
+	</h5>
+
+	<table id="uploaded-files" class="table">
+		<tr>
+			<th>Nome do Arquivo</th>
+			<th>Tamanho</th>
+			<th>Extensão</th>
+			<th>Download</th>
+			<th>Enviado Por</th>
+		</tr>
+	</table>
 </body>
 </html>
 

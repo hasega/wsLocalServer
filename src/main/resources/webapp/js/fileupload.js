@@ -1,12 +1,13 @@
 var BUFF_SIZE = 65535;
 var socket = 0;
+var items = [];
 
 function check() {
 	// Check for the various File API support.
 	if (window.File && window.FileReader && window.FileList && window.Blob) {
-		var dropZone = document.getElementById('drop_zone');
-		dropZone.addEventListener('dragover', handleDragOver, false);
-		dropZone.addEventListener('drop', uploadFile, false);
+		var dropZone = document.getElementById('dropzone');
+		// dropZone.addEventListener('dragover', handleDragOver, false);
+		// dropZone.addEventListener('drop', uploadFile, false);
 	} else {
 		alert('The File APIs are not fully supported in this browser.');
 	}
@@ -24,36 +25,54 @@ function check() {
 		}
 
 		socket = new WebSocket(ws_url);
-		socket.onopen = function (){
+		socket.onopen = function() {
 			console.log('ws connection is established');
 			var msg = new Object();
 			msg.op = 'list';
 			console.log('send text: ' + JSON.stringify(msg));
 			socket.send(JSON.stringify(msg));
 		};
-		
-		socket.onerror = function(error){
-			console.log('ws error: '+error)
+
+		socket.onerror = function(error) {
+			console.log('ws error: ' + error)
 		};
-		
-		socket.onmessage = function(evt){
+
+		socket.onmessage = function(evt) {
 			console.log('received msg: ' + evt.data);
 			var files = JSON.parse(evt.data);
-			var table = document.getElementById('list');
-			while (table.rows.length > 0)
-				table.deleteRow(table.rows.length - 1);
+			if (files.evento == 'list') {
 
-			for ( var i = 0, f; f = files[i]; i++) {
-				var row = table.insertRow(i);
-				var cell1 = row.insertCell(0);
-				var cell2 = row.insertCell(1);
-				cell1.innerHTML = f.name;
-				cell2.innerHTML = f.size;
+				var table = document.getElementById('uploaded-files');
+				while (table.rows.length > 0)
+					table.deleteRow(table.rows.length - 1);
+
+				for (var i = 0, f; f = files[i]; i++) {
+					var row = table.insertRow(i);
+					var cell1 = row.insertCell(0);
+					var cell2 = row.insertCell(1);
+					cell1.innerHTML = f.name;
+					cell2.innerHTML = f.size;
+				}
+				// document.getElementById('list_zone').style.height = 'auto';
+			} else if (files.evento == 'update') {
+				if (items.length != files.data.length) {
+
+					items = files.data;
+
+					$('#certificates_select').empty();
+					var json = files.data;
+					$.each(json, function(i, obj) {
+						$('#certificates_select').append(
+								$('<option>').text(obj.text).attr('value',
+										obj.val));
+					});
+				}
+
 			}
-			document.getElementById('list_zone').style.height = 'auto';
+
 		};
 
-		socket.onclose = function(){
+		socket.onclose = function() {
 			console.log('close');
 		};
 
@@ -62,47 +81,103 @@ function check() {
 	}
 }
 
-function handleDragOver(evt) {
-	evt.stopPropagation();
-	evt.preventDefault();
-	evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-}
+/*
+ * send files over websocket
+ * 
+ * function handleDragOver(evt) { evt.stopPropagation(); evt.preventDefault();
+ * evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy. }
+ * 
+ * 
+ * function uploadFile(evt) { evt.stopPropagation(); evt.preventDefault();
+ * 
+ * var f = evt.dataTransfer.files[0]; var chunks = Math.ceil(f.size /
+ * BUFF_SIZE); var msg = new Object();
+ * 
+ * msg.op = 'put'; msg.fname = f.name; msg.fsize = f.size;
+ * socket.send(JSON.stringify(msg)); console.log('send test: ' +
+ * JSON.stringify(msg));
+ * 
+ * for (var j = 0; j < chunks; j++) { var reader = new FileReader();
+ * 
+ * reader.onload = function(evt) { var data = evt.target.result.slice(0);
+ * console.log('send binary: ' + data.byteLength); socket.binaryType =
+ * "arraybuffer"; socket.send(data); };
+ * 
+ * var upper = BUFF_SIZE * (j + 1); if (upper > f.size) { upper = f.size;
+ * window.setTimeout(function() { var msg = new Object(); msg.op = 'list';
+ * console.log('send text: ' + JSON.stringify(msg));
+ * socket.send(JSON.stringify(msg)); }, 2000); } var blob = f.slice(BUFF_SIZE *
+ * j, upper); reader.readAsArrayBuffer(blob); } }
+ */
+$(function() {
 
-function uploadFile(evt) {
-	evt.stopPropagation();
-	evt.preventDefault();
+	$('#fileupload')
+			.fileupload(
+					{
 
-	var f = evt.dataTransfer.files[0];
-	var chunks = Math.ceil(f.size / BUFF_SIZE);
-	var msg = new Object();
-	
-	msg.op = 'put';
-	msg.fname = f.name;
-	msg.fsize = f.size;
-	socket.send(JSON.stringify(msg));
-	console.log('send test: '+JSON.stringify(msg));
-	
-	for ( var j = 0; j < chunks; j++) {
-		var reader = new FileReader();
+						dataType : 'json',
 
-		reader.onload = function(evt) {
-			var data = evt.target.result.slice(0);
-			console.log('send binary: ' + data.byteLength);
-			socket.binaryType = "arraybuffer";
-			socket.send(data);
-		};
-		
-		var upper = BUFF_SIZE * (j + 1);
-		if (upper > f.size) {
-			upper = f.size;
-			window.setTimeout(function () {
-				var msg = new Object();
-				msg.op = 'list';
-				console.log('send text: ' + JSON.stringify(msg));
-				socket.send(JSON.stringify(msg));
-			}, 2000);
-		}
-		var blob = f.slice(BUFF_SIZE * j, upper);
-		reader.readAsArrayBuffer(blob);
-	}
-}
+						done : function(e, data) {
+							$("tr:has(td)").remove();
+							$
+									.each(
+											data.result,
+											function(index, file) {
+
+												$("#uploaded-files")
+														.append(
+																$('<tr/>')
+																		.append(
+																				$(
+																						'<td/>')
+																						.text(
+																								file.fileName))
+																		.append(
+																				$(
+																						'<td/>')
+																						.text(
+																								file.fileSize))
+																		.append(
+																				$(
+																						'<td/>')
+																						.text(
+																								file.fileType))
+																		.append(
+																				$(
+																						'<td/>')
+																						.html(
+																								"<a href='upload?f="
+																										+ index
+																										+ "'>Click</a>"))
+																		.append(
+																				$(
+																						'<td/>')
+																						.text(
+																								"@"
+																										+ file.twitter))
+
+														)// end
+												// $("#uploaded-files").append()
+											});
+						},
+
+						progressall : function(e, data) {
+							var progress = parseInt(data.loaded / data.total
+									* 100, 10);
+							$('#progress .bar').css('width', progress + '%');
+						},
+
+						dropZone : $('#dropzone')
+					}).bind('fileuploadsubmit', function(e, data) {
+				// The example input, doesn't have to be part of the upload
+				// form:
+				var p = $('#password');
+				var c = $('#certificates_select');
+
+				data.formData = {
+					password : p.val(),
+					certificates_select : c.val()
+				};
+			});
+
+});

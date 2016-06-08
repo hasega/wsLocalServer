@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -51,6 +53,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -71,6 +75,23 @@ import com.itextpdf.text.pdf.security.PrivateKeySignature;
  * @author onvaid@hotmail.com
  */
 public class VerCert {
+
+	public static JSONArray listCert()
+			throws NoSuchProviderException, NoSuchAlgorithmException, CertificateException, IOException {
+		String[] a = funcListaCertificados(true);
+		JSONArray r = new JSONArray();
+		for (int i = 0; i < a.length; i++) {
+			JSONObject p = new JSONObject();
+			if (a[i] == null)
+				continue;
+			p.put("text", a[i]);
+			p.put("value", a[i]);
+
+			r.add(p);
+		}
+		return r;
+	}
+
 	public static KeyStore getKeyStore() throws KeyStoreException, NoSuchProviderException {
 		AppServer.OSType t = AppServer.getOperatingSystemType();
 
@@ -176,12 +197,14 @@ public class VerCert {
 		return retorno;
 	}
 
-	public String assinadorDigital(String certificado, String senha, String arquivo, String nomeArq) {
+	public static InputStream assinadorDigital(String certificado, String senha, InputStream arquivo, String nomeArq) {
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		String retorno = "";
 		System.out.println("0");
-		String extensao = arquivo.substring(arquivo.lastIndexOf('.'));
+		String extensao = nomeArq.substring(nomeArq.lastIndexOf('.'));
+		PipedInputStream in = new PipedInputStream();
+
 
 		try {
 			KeyStore ks = getKeyStore();
@@ -207,8 +230,10 @@ public class VerCert {
 				PdfReader pdfReader = new PdfReader(arquivo);
 				// PdfReader pdfReader = new PdfReader("C:\\Assinatura.pdf");
 
-				FileOutputStream output = new FileOutputStream(arquivo.replace(extensao, "") + "_Assinado.pdf");
-
+				//FileOutputStream output = new FileOutputStream(arquivo.replace(extensao, "") + "_Assinado.pdf");
+				final PipedOutputStream output = new PipedOutputStream(in);
+	
+				
 				PdfStamper stamper = PdfStamper.createSignature(pdfReader, output, '\0', null, true);
 
 				PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
@@ -226,9 +251,7 @@ public class VerCert {
 
 				retorno = "OK";
 			} catch (CertificateExpiredException e) {
-				JOptionPane.showMessageDialog(null,
-						"Certificado Digital " + alias + " expirado desde " + sdf.format(cert.getNotAfter()));
-				retorno = e.toString();
+				e.printStackTrace();
 			}
 
 		} catch (IOException iow) {
@@ -245,7 +268,7 @@ public class VerCert {
 			retorno = ex.toString();
 		}
 
-		return retorno;
+		return in;
 	}
 
 	public void loadCertificates(String certificado, String senha, XMLSignatureFactory signatureFactory)
@@ -341,18 +364,13 @@ public class VerCert {
 	// Procedimento de listagem dos certificados digitais
 	public static String[] funcListaCertificados(boolean booCertValido)
 			throws NoSuchProviderException, IOException, NoSuchAlgorithmException, CertificateException {
-
 		// Estou setando a variavel para 20 dispositivos no maximo
 		String strResult[] = new String[20];
 		Integer intCnt = 0;
-
 		try {
 			KeyStore ks = getKeyStore();
-
 			ks.load(null, null);
-
 			Enumeration<String> aliasEnum = ks.aliases();
-
 			while (aliasEnum.hasMoreElements()) {
 				String aliasKey = (String) aliasEnum.nextElement();
 

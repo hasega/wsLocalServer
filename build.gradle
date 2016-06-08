@@ -1,13 +1,32 @@
+
+buildscript {
+    repositories {
+        jcenter()
+         maven {
+      url 'https://plugins.gradle.org/m2/'
+    }
+    }
+
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+            classpath 'gradle.plugin.edu.sc.seis.gradle:launch4j:1.6.1'
+        
+    }
+}
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'eu.appsatori.fatjar'
+apply plugin: 'edu.sc.seis.launch4j'
+
+
 
 group = 'io.tempra'
 version = '1.0'
 
 description = """WebSocket LocalServer"""
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 
 
@@ -24,19 +43,50 @@ dependencies {
     compile group: 'org.mapdb', name: 'mapdb', version:'1.0.8'
     compile group: 'commons-io', name: 'commons-io', version:'1.3.2'
     compile group: 'commons-codec', name: 'commons-codec', version:'1.10'
-    compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version:'1.52'
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'9.2.7.v20150116'
-    compile group: 'org.eclipse.jetty', name: 'jetty-servlets', version:'9.2.7.v20150116'
-    compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version:'2.7'
-    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet-core', version:'2.7'
-    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-jetty-http', version:'2.7'
-    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-moxy', version:'2.7'
+compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.54'
+compile group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.54'
+
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'9.3.10.M0'
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlets', version:'9.3.10.M0'
+    compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version:'2.22.2'
+   //compile group:'com.sun.jersey' , name:'jersey-json',   version : '1.17.1'
+    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet-core', version:'2.22.2'
+    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-jetty-http', version:'2.22.2'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version:'2.22.2'
     compile group: 'org.scream3r', name: 'jssc', version:'2.8.0'
     compile group: 'com.kenai.nbpwr', name: 'com-sun-pdfview', version:'1.0.5-201003191900'
     compile group: 'log4j', name: 'log4j', version:'1.2.12'
     compile group: 'javax.websocket', name: 'javax.websocket-api', version:'1.0'
-    compile group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-server-impl', version:'9.2.7.v20150116'
-    compile group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-client-impl', version:'9.2.7.v20150116'
+    compile group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-server-impl', version:'9.3.10.M0'
+    compile group: 'org.eclipse.jetty.websocket', name: 'javax-websocket-client-impl', version:'9.3.10.M0'
 	compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+	compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.1'
 
+}
+
+fatJar {
+    classifier 'fat'
+    manifest {
+        attributes 'Main-Class':'io.tempra.AppServer'
+    }
+       exclude 'META-INF/*.*'
+    }
+
+
+
+jar {
+    from configurations.compile.collect {
+        it.isDirectory() ? it : zipTree(it).matching{exclude{it.path.contains('META-INF')}}
+    }
+}
+
+
+copyL4jLib.dependsOn fatJar
+fatJarPrepareFiles.dependsOn jar
+
+launch4j {
+    outfile = 'signer.exe'
+    mainClassName = 'io.tempra.AppServer'
+    copyConfigurable = project.tasks.fatJar.outputs.files
+    jar = "lib/${project.tasks.fatJar.archiveName}"
 }

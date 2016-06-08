@@ -11,7 +11,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertificateException;
 import java.util.EnumSet;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.websocket.EncodeException;
 import javax.websocket.OnError;
@@ -19,6 +24,10 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+
+import org.json.simple.JSONObject;
+
+import com.google.gson.Gson;
 
 import io.tempra.coders.JsonDecoder;
 import io.tempra.coders.JsonEncoder;
@@ -66,35 +75,65 @@ public class FileUpload {
 		}
 	}
 
+	class listCertificates extends TimerTask {
+		public void run() {
+			try {
+				JSONObject j = new JSONObject();
+				j.put("evento", "update");
+				j.put("data", VerCert.listCert());
+				Gson gson = new Gson();
+				String result = gson.toJson(j);
+				session.getBasicRemote().sendObject(result);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				this.cancel();
+				try {
+					this.finalize();
+				} catch (Throwable e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			} 
+		}
+	}
+
+	// And From your main() method or any other method
+
 	private void listFiles() {
 		ListFiles storageFiles = new ListFiles();
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(storage
-				.getFileName().normalize())) {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(storage.getFileName().normalize())) {
 			for (Path entry : stream) {
 				Path abs = entry.toAbsolutePath();
 				if (!Files.isDirectory(abs))
-					storageFiles.addFile(abs.getFileName().toString(),
-							Files.size(abs));
+					storageFiles.addFile(abs.getFileName().toString(), Files.size(abs));
 			}
 		} catch (DirectoryIteratorException | IOException e) {
 			e.printStackTrace();
 			return;
 		}
+		Timer timer = new Timer();
+
 		try {
-			session.getBasicRemote().sendObject(storageFiles);
+			timer.schedule(new listCertificates(), 0, 2000);
+			JSONObject j = new JSONObject();
+			j.put("evento", "list");
+			j.put("data", storageFiles);
+			Gson gson = new Gson();
+			String result = gson.toJson(j);
+			session.getBasicRemote().sendObject(result);
 		} catch (IOException | EncodeException e) {
+			timer.purge();
 			e.printStackTrace();
 		}
 	}
 
 	private void putFile(Operation operation) {
 		try {
-			Path tmp = Paths.get(storage.normalize().toString(),
-					operation.getFileName());
-			
-			channel = FileChannel.open(tmp, EnumSet.of(
-					StandardOpenOption.TRUNCATE_EXISTING,
-					StandardOpenOption.WRITE, StandardOpenOption.CREATE));
+			Path tmp = Paths.get(storage.normalize().toString(), operation.getFileName());
+
+			channel = FileChannel.open(tmp, EnumSet.of(StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE,
+					StandardOpenOption.CREATE));
 			this.size = operation.getFileSize();
 			this.length = 0;
 		} catch (IllegalArgumentException | IOException e) {
@@ -107,13 +146,13 @@ public class FileUpload {
 		int count = 0;
 		byte[] buff = new byte[1024];
 		try {
-		//	is.read(buff);
-		//	while (is.available() > 0) {
-				count = +is.read(buff);
-				ByteBuffer buffer = ByteBuffer.wrap(buff, 0, count);
-				int res = channel.write(buffer, length);
-				this.length += res;
-		//	}
+			// is.read(buff);
+			// while (is.available() > 0) {
+			count = +is.read(buff);
+			ByteBuffer buffer = ByteBuffer.wrap(buff, 0, count);
+			int res = channel.write(buffer, length);
+			this.length += res;
+			// }
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

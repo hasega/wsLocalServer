@@ -36,6 +36,8 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.MetaInfConfiguration;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.json.simple.JSONObject;
@@ -105,6 +107,8 @@ public  class AppServer {
 
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
+		
+	   
 
 		Server jettyServer = new Server(Integer.parseInt(getProperty("localport")));
 		// security configuration
@@ -132,7 +136,7 @@ public  class AppServer {
 		// if (System.getProperty("noServApp").equalsIgnoreCase("true"))
 		// servApp = false;
 		if (servApp) {
-			ProtectionDomain domain = AppServer.class.getProtectionDomain();
+		//	ProtectionDomain domain = AppServer.class.getProtectionDomain();
 			String webDir = AppServer.class.getResource("/webapp").toExternalForm();
 			System.out.println("Jetty WEB DIR >>>>" + webDir);
 			resource_handler.setDirectoriesListed(true);
@@ -148,6 +152,7 @@ public  class AppServer {
 			// .getProperty("java.io.tmpdir") + "/app");
 		}
 		// sample to add rest services on container
+		context.addServlet(FileUploadServlet.class, "/upload");
 		ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/services/*");
 		jerseyServlet.setInitOrder(0);
 
@@ -156,6 +161,10 @@ public  class AppServer {
 
 		HandlerList handlers = new HandlerList();
 		// context.addFilter(holder, "/*", EnumSet.of(DispatcherType.REQUEST));
+		
+
+				    
+				    
 		handlers.setHandlers(new Handler[] { resource_handler, context,
 
 				// wscontext,
